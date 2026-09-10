@@ -1,0 +1,236 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+<title>Steckbrief · Giuseppe Antonio Majica</title>
+<style>
+:root {
+    --bg: #000000;
+    --panel: #0a0a0a;
+    --hair: rgba(255,255,255,0.08);
+    --red: #e10600;
+    --red-soft: rgba(225,6,0,0.35);
+    --red-glow: rgba(225,6,0,0.22);
+    --green: #00d2be;
+    --ink: #f2f2f2;
+    --ink-dim: #8f8f8f;
+    --ink-faint: #5c5c5c;
+    --font: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI',
+            'Helvetica Neue', Arial, sans-serif;
+}
+* { box-sizing: border-box; }
+body, html { height: 100%; }
+body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--ink);
+    font-family: var(--font);
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+}
+.stage {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 8vh 6vw;
+    position: relative;
+    overflow: hidden;
+}
+.stage::before {
+    content: "";
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 60vw;
+    height: 60vw;
+    max-width: 900px;
+    max-height: 900px;
+    background: radial-gradient(circle,var(--red-glow) 0,rgba(0,0,0,0) 70%);
+    transform: translate(-50%,-50%);
+    pointer-events: none;
+    opacity: .5;
+}
+.frame {
+    position: relative;
+    width: 100%;
+    max-width: 560px;
+    padding: 56px 48px 48px;
+}
+.platecorner {
+    position: absolute;
+    width: 22px;
+    height: 22px;
+    border: 1.5px solid var(--red-soft);
+}
+.platecorner.tl { top:0; left:0; border-right:none; border-bottom:none; }
+.platecorner.tr { top:0; right:0; border-left:none; border-bottom:none; }
+.platecorner.bl { bottom:0; left:0; border-right:none; border-top:none; }
+.platecorner.br { bottom:0; right:0; border-left:none; border-top:none; }
+.head { text-align:center; margin-bottom:40px; }
+.title {
+    margin:0 0 16px;
+    font-size:clamp(2.4rem,6vw,3.4rem);
+    font-weight:700;
+    letter-spacing:-.02em;
+    color:var(--ink);
+}
+.rule { width:40px; height:2px; background:var(--red); margin:0 auto; }
+.sheet { display:flex; flex-direction:column; gap:20px; margin-bottom:44px; }
+.row {
+    display:grid;
+    grid-template-columns:120px 1fr;
+    gap:18px;
+    align-items:baseline;
+    border-bottom:1px solid var(--hair);
+    padding-bottom:16px;
+}
+.label {
+    font-size:.82rem;
+    font-weight:500;
+    letter-spacing:.02em;
+    color:var(--ink-dim);
+}
+.value { font-size:.98rem; font-weight:400; color:var(--ink); line-height:1.5; }
+.sub-companies { text-align:center; margin-top:4px; }
+.launch { display:flex; flex-direction:column; align-items:center; }
+.btn-main {
+    display:inline-flex;
+    align-items:center;
+    gap:10px;
+    background:0 0;
+    color:var(--ink);
+    border:1.5px solid var(--red);
+    border-radius:999px;
+    padding:14px 30px;
+    font-family:inherit;
+    font-size:.95rem;
+    font-weight:600;
+    letter-spacing:.01em;
+    cursor:pointer;
+    transition:transform .35s cubic-bezier(.2,.9,.3,1.3),box-shadow .35s,background .35s;
+}
+.btn-main svg { color:var(--red); flex-shrink:0; }
+.menu-icon .line {
+    fill:none;
+    stroke:currentColor;
+    stroke-width:1.6;
+    stroke-linecap:round;
+    transform-box:fill-box;
+    transform-origin:center;
+    transition:transform .35s cubic-bezier(.2,.9,.3,1.3),opacity .25s ease;
+}
+.btn-main[aria-expanded="true"] .line.top { transform:translateY(6px) rotate(45deg); }
+.btn-main[aria-expanded="true"] .line.middle { opacity:0; }
+.btn-main[aria-expanded="true"] .line.bottom { transform:translateY(-6px) rotate(-45deg); }
+.btn-main:focus-visible,.btn-main:hover {
+    transform:scale(1.035);
+    box-shadow:0 0 0 1px var(--red-soft),0 12px 32px -8px var(--red-glow);
+    background:rgba(225,6,0,.06);
+    outline:0;
+}
+.btn-main[aria-expanded="true"] { background:rgba(225,6,0,.08); border-color:var(--red); }
+.panel {
+    display:grid;
+    grid-template-rows:0fr;
+    opacity:0;
+    width:100%;
+    max-width:320px;
+    margin-top:0;
+    transition:grid-template-rows .45s cubic-bezier(.2,.9,.2,1),opacity .35s,margin-top .45s cubic-bezier(.2,.9,.2,1);
+}
+.panel[data-open="true"] { grid-template-rows:1fr; opacity:1; margin-top:18px; }
+.panel > * { overflow:hidden; }
+.panel-inner { display:flex; flex-direction:column; gap:10px; overflow:hidden; }
+.btn-sub {
+    display:flex;
+    align-items:center;
+    gap:10px;
+    text-decoration:none;
+    color:var(--ink);
+    background:var(--panel);
+    border:1px solid var(--hair);
+    border-radius:10px;
+    padding:13px 18px;
+    font-size:.88rem;
+    font-weight:500;
+    transition:border-color .25s,transform .25s,background .25s;
+}
+.btn-sub svg { color:var(--green); flex-shrink:0; }
+.btn-sub:focus-visible,.btn-sub:hover { border-color:var(--red-soft); background:#101010; transform:translateX(3px); outline:0; }
+.quote {
+    position:fixed;
+    right:22px;
+    bottom:18px;
+    margin:0;
+    font-size:.72rem;
+    font-weight:300;
+    letter-spacing:.04em;
+    color:var(--ink-faint);
+    font-style:italic;
+    user-select:none;
+}
+@media (max-width:560px) {
+    .frame { padding:44px 26px 36px; }
+    .row { grid-template-columns:1fr; gap:6px; }
+    .label { font-size:.75rem; }
+    .quote { right:16px; bottom:14px; font-size:.66rem; }
+}
+@media (prefers-reduced-motion:reduce) { * { transition:none !important; } }
+</style>
+</head>
+<body>
+<main class="stage">
+<div class="frame">
+<div class="platecorner tl"></div><div class="platecorner tr"></div>
+<div class="platecorner bl"></div><div class="platecorner br"></div>
+<header class="head"><h1 class="title">Steckbrief</h1><div class="rule"></div></header>
+<section class="sheet" aria-label="Persönliche Angaben">
+<div class="row"><span class="label">Name</span><span class="value">Giuseppe Antonio Majica</span></div>
+<div class="row"><span class="label">Geburtsdatum</span><span class="value">21.05.2010</span></div>
+<div class="row"><span class="label">Hobbys</span><span class="value">Geld machen, F1 schauen, Racing Games zocken, Geld ausgeben</span></div>
+<div class="row"><span class="label">Wurzeln</span><span class="value">50% Italien (Sizilien) · 50% Kroatien (Dalmatien)</span></div>
+<div class="row"><span class="label">Freunde</span><span class="value">Louis, Sergey, Robin, Fabian...</span></div>
+<div class="row">
+<span class="label">Tätigkeit</span>
+<span class="value">Unternehmensaufbau von Majica Enterprises
+<div class="sub-companies">Majica Design<br>Majica Maison</div>
+</span>
+</div>
+</section>
+<div class="launch">
+<button class="btn-main" id="toggle" aria-expanded="false" aria-controls="panel">
+<svg class="menu-icon" viewBox="0 0 24 24" width="18" height="18" aria-hidden="true">
+<line class="line top" x1="4" y1="6" x2="20" y2="6"></line>
+<line class="line middle" x1="4" y1="12" x2="20" y2="12"></line>
+<line class="line bottom" x1="4" y1="18" x2="20" y2="18"></line>
+</svg>
+<span>Meine Projekte</span>
+</button>
+<nav class="panel" id="panel" aria-hidden="true">
+<div class="panel-inner">
+<a class="btn-sub" href="https://majica.de" target="_blank" rel="noopener noreferrer">
+<svg viewBox="0 0 24 24" width="15" height="15" aria-hidden="true"><path d="M9 6h9v9M18 6L6 18" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+<span>majica.de</span></a>
+<a class="btn-sub" href="https://maison.majica.de" target="_blank" rel="noopener noreferrer">
+<svg viewBox="0 0 24 24" width="15" height="15" aria-hidden="true"><path d="M9 6h9v9M18 6L6 18" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+<span>maison.majica.de</span></a>
+</div></nav>
+</div>
+</div>
+<p class="quote">Building Tomorrows Monument</p>
+</main>
+<script>
+!function(){
+function e(){var e=document.getElementById("toggle"),t=document.getElementById("panel");
+e&&t&&e.addEventListener("click",function(){var n=!("\u0074rue"===e.getAttribute("aria-expanded"));
+e.setAttribute("aria-expanded",String(n));t.setAttribute("aria-hidden",String(!n));t.setAttribute("data-open",String(n));});}
+function t(){document.addEventListener("contextmenu",function(e){e.preventDefault();});
+document.addEventListener("keydown",function(e){var t=e.key?e.key.toUpperCase():"";
+("F12"===t||e.ctrlKey&&"U"===t||e.metaKey&&e.altKey&&"U"===t||e.ctrlKey&&e.shiftKey&&("I"===t||"J"===t||"C"===t)||e.metaKey&&e.altKey&&("I"===t||"J"===t||"C"===t))&&e.preventDefault();});}
+"loading"===document.readyState?document.addEventListener("DOMContentLoaded",function(){e();t();}):(e(),t());
+}();
+</script>
+</body>
+</html>
