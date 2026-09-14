@@ -1,0 +1,524 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Interplanetare Analyse</title>
+<style>
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+body {
+    background-color: #030305;
+    color: #ffffff;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    overflow-x: hidden;
+    overflow-y: hidden;
+}
+.star-bg {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: radial-gradient(circle at center, #0a0a1a 0%, #000000 100%);
+    z-index: -1;
+}
+.star-bg::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-image: 
+        radial-gradient(1px 1px at 10% 20%, #ffffff, transparent),
+        radial-gradient(2px 2px at 40% 60%, #ffffff, transparent),
+        radial-gradient(1.5px 1.5px at 80% 30%, #ffffff, transparent),
+        radial-gradient(2px 2px at 90% 80%, #ffffff, transparent),
+        radial-gradient(1px 1px at 30% 90%, #ffffff, transparent),
+        radial-gradient(1px 1px at 60% 10%, #ffffff, transparent);
+    background-size: 200px 200px;
+    opacity: 0.6;
+}
+#nav-screen {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    z-index: 20;
+    transition: opacity 0.8s ease, transform 0.8s ease;
+}
+.title-main {
+    font-size: 3.5rem;
+    letter-spacing: 4px;
+    margin-bottom: 4rem;
+    text-transform: uppercase;
+    text-shadow: 0 0 20px rgba(77, 166, 255, 0.5);
+    background: linear-gradient(90deg, #fff, #4da6ff);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+.nav-container {
+    display: flex;
+    gap: 4rem;
+    justify-content: center;
+    align-items: center;
+    flex-wrap: wrap;
+}
+.planet-card {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    cursor: pointer;
+    transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+.planet-card:hover {
+    transform: scale(1.15);
+}
+.planet-card:hover .planet-sphere {
+    box-shadow: inset -20px -20px 40px rgba(0,0,0,0.9), 0 0 40px rgba(255,255,255,0.4);
+}
+.planet-sphere {
+    width: 220px;
+    height: 220px;
+    border-radius: 50%;
+    background-size: 200% 100%;
+    background-repeat: repeat-x;
+    box-shadow: inset -20px -20px 40px rgba(0,0,0,0.9), 0 0 15px rgba(255,255,255,0.1);
+    animation: rotateTexture 20s linear infinite;
+    transition: box-shadow 0.4s ease;
+}
+.planet-card h2 {
+    margin-top: 1.5rem;
+    font-size: 1.8rem;
+    letter-spacing: 2px;
+    color: #e0e0e0;
+    transition: color 0.3s ease;
+}
+.planet-card:hover h2 {
+    color: #4da6ff;
+}
+@keyframes rotateTexture {
+    0% { background-position: 0% 0; }
+    100% { background-position: 200% 0; }
+}
+#btn-back {
+    position: fixed;
+    top: 30px;
+    left: 30px;
+    padding: 10px 25px;
+    background: rgba(77, 166, 255, 0.1);
+    border: 1px solid rgba(77, 166, 255, 0.4);
+    color: #4da6ff;
+    font-size: 1rem;
+    font-weight: bold;
+    border-radius: 8px;
+    cursor: pointer;
+    z-index: 50;
+    transition: all 0.3s ease;
+    display: none;
+    backdrop-filter: blur(5px);
+}
+#btn-back:hover {
+    background: rgba(77, 166, 255, 0.3);
+    box-shadow: 0 0 15px rgba(77, 166, 255, 0.4);
+}
+#scroll-presentation {
+    display: none;
+    height: 500vh;
+    position: relative;
+}
+.sticky-container {
+    position: sticky;
+    top: 0;
+    width: 100vw;
+    height: 100vh;
+    overflow: hidden;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+.planet-stage {
+    position: relative;
+    width: 450px;
+    height: 450px;
+    transform-origin: center;
+}
+.layer {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    will-change: transform, opacity;
+}
+.crust-top, .crust-bottom {
+    background-size: 200% 100%;
+    background-repeat: repeat-x;
+    animation: rotateTexture 20s linear infinite;
+    z-index: 5;
+}
+.crust-top {
+    clip-path: polygon(0 0, 100% 0, 100% 50%, 0 50%);
+}
+.crust-bottom {
+    clip-path: polygon(0 50%, 100% 50%, 100% 100%, 0 100%);
+}
+.shadow-overlay {
+    position: absolute;
+    top: 0; left: 0; width: 100%; height: 100%;
+    border-radius: 50%;
+    box-shadow: inset -30px -30px 60px rgba(0,0,0,0.9);
+    z-index: 6;
+    pointer-events: none;
+}
+.crust-top .shadow-overlay { clip-path: polygon(0 0, 100% 0, 100% 50%, 0 50%); }
+.crust-bottom .shadow-overlay { clip-path: polygon(0 50%, 100% 50%, 100% 100%, 0 100%); }
+
+.mantle {
+    transform: scale(0.85);
+    z-index: 4;
+}
+.outer-core {
+    transform: scale(0.6);
+    z-index: 3;
+}
+.inner-core {
+    transform: scale(0.3);
+    z-index: 2;
+    box-shadow: 0 0 60px rgba(255, 255, 255, 0.4);
+}
+.info-panel {
+    position: absolute;
+    width: 300px;
+    padding: 1.8rem;
+    background: rgba(10, 10, 26, 0.85);
+    border: 1px solid rgba(77, 166, 255, 0.4);
+    border-radius: 12px;
+    backdrop-filter: blur(12px);
+    opacity: 0;
+    pointer-events: none;
+    will-change: opacity, transform;
+    color: #e0e0e0;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+}
+.info-panel h3 {
+    color: #4da6ff;
+    margin-bottom: 1rem;
+    font-size: 1.3rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    border-bottom: 2px solid rgba(77, 166, 255, 0.3);
+    padding-bottom: 0.5rem;
+}
+.info-panel p {
+    font-size: 0.95rem;
+    line-height: 1.6;
+    margin-bottom: 1rem;
+}
+.data-row {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 0.6rem;
+    font-size: 0.9rem;
+    background: rgba(255,255,255,0.05);
+    padding: 0.5rem;
+    border-radius: 6px;
+}
+.data-row span:last-child {
+    color: #4da6ff;
+    font-weight: bold;
+}
+#panel-crust { top: -5%; left: 110%; transform: translateX(50px); }
+#panel-mantle { top: 25%; left: -100%; transform: translateX(-50px); }
+#panel-outer { top: 60%; left: 110%; transform: translateX(50px); }
+#panel-inner { top: 85%; left: -100%; transform: translateX(-50px); }
+.scroll-indicator {
+    position: absolute;
+    bottom: 40px;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    opacity: 0;
+    animation: fadeIn 2s forwards;
+    animation-delay: 1s;
+}
+.scroll-indicator span {
+    font-size: 0.9rem;
+    letter-spacing: 3px;
+    margin-bottom: 12px;
+    text-transform: uppercase;
+    color: #4da6ff;
+    font-weight: bold;
+}
+.mouse {
+    width: 26px;
+    height: 40px;
+    border: 2px solid #4da6ff;
+    border-radius: 13px;
+    position: relative;
+}
+.wheel {
+    width: 4px;
+    height: 8px;
+    background: #fff;
+    border-radius: 2px;
+    position: absolute;
+    top: 6px;
+    left: 50%;
+    transform: translateX(-50%);
+    animation: scrollWheel 1.5s infinite;
+}
+@keyframes scrollWheel {
+    0% { top: 6px; opacity: 1; }
+    100% { top: 22px; opacity: 0; }
+}
+@keyframes fadeIn {
+    to { opacity: 1; }
+}
+</style>
+</head>
+<body>
+
+<div class="star-bg"></div>
+
+<div id="nav-screen">
+    <h1 class="title-main">System-Navigator</h1>
+    <div class="nav-container">
+        <div class="planet-card" data-planet="erde">
+            <div class="planet-sphere" style="background-image: url('https://upload.wikimedia.org/wikipedia/commons/c/c4/Earthmap1000x500compac.jpg');"></div>
+            <h2>Erde</h2>
+        </div>
+        <div class="planet-card" data-planet="mars">
+            <div class="planet-sphere" style="background-image: url('https://upload.wikimedia.org/wikipedia/commons/f/fc/Mars-equirectangular_rgb-map_4k.jpg');"></div>
+            <h2>Mars</h2>
+        </div>
+        <div class="planet-card" data-planet="venus">
+            <div class="planet-sphere" style="background-image: url('https://upload.wikimedia.org/wikipedia/commons/b/b5/Venus_map_NASA_JPL_Magellan_Venera_Pioneer.jpg');"></div>
+            <h2>Venus</h2>
+        </div>
+    </div>
+</div>
+
+<button id="btn-back">← Zurück zur Auswahl</button>
+
+<div id="scroll-presentation">
+    <div class="sticky-container">
+        <div class="planet-stage" id="stage">
+            <div class="layer inner-core" id="l-inner"></div>
+            <div class="layer outer-core" id="l-outer"></div>
+            <div class="layer mantle" id="l-mantle"></div>
+            
+            <div class="layer crust-top" id="l-top">
+                <div class="shadow-overlay"></div>
+            </div>
+            <div class="layer crust-bottom" id="l-bottom">
+                <div class="shadow-overlay"></div>
+            </div>
+
+            <div class="info-panel" id="panel-crust">
+                <h3 id="c-title">Kruste</h3>
+                <p id="c-desc"></p>
+                <div class="data-row"><span id="c-r1"></span> <span id="c-v1"></span></div>
+                <div class="data-row"><span id="c-r2"></span> <span id="c-v2"></span></div>
+            </div>
+
+            <div class="info-panel" id="panel-mantle">
+                <h3 id="m-title">Mantel</h3>
+                <p id="m-desc"></p>
+                <div class="data-row"><span id="m-r1"></span> <span id="m-v1"></span></div>
+                <div class="data-row"><span id="m-r2"></span> <span id="m-v2"></span></div>
+            </div>
+
+            <div class="info-panel" id="panel-outer">
+                <h3 id="o-title">Äußerer Kern</h3>
+                <p id="o-desc"></p>
+                <div class="data-row"><span id="o-r1"></span> <span id="o-v1"></span></div>
+                <div class="data-row"><span id="o-r2"></span> <span id="o-v2"></span></div>
+            </div>
+
+            <div class="info-panel" id="panel-inner">
+                <h3 id="i-title">Innerer Kern</h3>
+                <p id="i-desc"></p>
+                <div class="data-row"><span id="i-r1"></span> <span id="i-v1"></span></div>
+                <div class="data-row"><span id="i-r2"></span> <span id="i-v2"></span></div>
+            </div>
+        </div>
+
+        <div class="scroll-indicator" id="scroll-hint">
+            <span>Scrollen zur Analyse</span>
+            <div class="mouse"><div class="wheel"></div></div>
+        </div>
+    </div>
+</div>
+
+<script>
+const planetsData = {
+    erde: {
+        tex: 'https://upload.wikimedia.org/wikipedia/commons/c/c4/Earthmap1000x500compac.jpg',
+        colors: ['#e65c00', '#ffaa00', '#ffffff'],
+        p: [
+            { t: "Erdkruste", d: "Dünne, feste Gesteinsschicht, die Kontinente und Ozeane bildet.", r1: "Dicke:", v1: "5 - 70 km", r2: "Temp:", v2: "-89 bis 58 °C" },
+            { t: "Erdmantel", d: "Zähflüssiges Magma. Die Konvektionsströme bewegen tektonische Platten.", r1: "Tiefe:", v1: "2.890 km", r2: "Temp:", v2: "bis 3.500 °C" },
+            { t: "Äußerer Kern", d: "Eine Schicht aus flüssigem Eisen und Nickel. Erzeugt das Erdmagnetfeld.", r1: "Tiefe:", v1: "5.150 km", r2: "Zustand:", v2: "Flüssig" },
+            { t: "Innerer Kern", d: "Fester Eisen-Nickel-Kern. Durch extremen Druck trotz Hitze fest.", r1: "Radius:", v1: "1.220 km", r2: "Temp:", v2: "ca. 5.400 °C" }
+        ]
+    },
+    mars: {
+        tex: 'https://upload.wikimedia.org/wikipedia/commons/f/fc/Mars-equirectangular_rgb-map_4k.jpg',
+        colors: ['#a63c14', '#e67300', '#ffcc66'],
+        p: [
+            { t: "Marskruste", d: "Eisenreiches Basaltgestein. Eisenoxid verleiht die rote Farbe.", r1: "Dicke:", v1: "10 - 50 km", r2: "Temp:", v2: "-153 bis 20 °C" },
+            { t: "Marsmantel", d: "Ruhiger Silikatgestein-Mantel ohne aktive Plattentektonik.", r1: "Tiefe:", v1: "ca. 1.500 km", r2: "Zustand:", v2: "Fest" },
+            { t: "Äußerer Kern", d: "Wahrscheinlich flüssig oder halbflüssig. Kein globales Magnetfeld.", r1: "Radius:", v1: "ca. 1.800 km", r2: "Zustand:", v2: "Flüssig" },
+            { t: "Innerer Kern", d: "Es ist aktuell unklar, ob der Mars einen festen inneren Kern besitzt.", r1: "Zustand:", v1: "Unbekannt", r2: "Zusammensetzung:", v2: "Eisen / Schwefel" }
+        ]
+    },
+    venus: {
+        tex: 'https://upload.wikimedia.org/wikipedia/commons/b/b5/Venus_map_NASA_JPL_Magellan_Venera_Pioneer.jpg',
+        colors: ['#c27e3a', '#ff9900', '#ffeecc'],
+        p: [
+            { t: "Venuskruste", d: "Dichte, von extremem Vulkanismus geprägte Gesteinskruste.", r1: "Dicke:", v1: "10 - 30 km", r2: "Temp:", v2: "Ø 464 °C" },
+            { t: "Venusmantel", d: "Ähnlich der Erde, aber wesentlich trockener und heißer.", r1: "Tiefe:", v1: "ca. 3.000 km", r2: "Zustand:", v2: "Zähflüssig" },
+            { t: "Äußerer Kern", d: "Wahrscheinlich flüssig, erzeugt aber durch langsame Rotation kaum ein Magnetfeld.", r1: "Zustand:", v1: "Flüssig", r2: "Magnetfeld:", v2: "Sehr schwach" },
+            { t: "Innerer Kern", d: "Möglicherweise fest. Die genauen Daten sind durch die dichte Atmosphäre schwer messbar.", r1: "Zustand:", v1: "Wahrscheinlich Fest", r2: "Temp:", v2: "Sehr hoch" }
+        ]
+    }
+};
+
+const navScreen = document.getElementById('nav-screen');
+const scrollPresentation = document.getElementById('scroll-presentation');
+const btnBack = document.getElementById('btn-back');
+const scrollHint = document.getElementById('scroll-hint');
+const stage = document.getElementById('stage');
+const topHalf = document.getElementById('l-top');
+const bottomHalf = document.getElementById('l-bottom');
+const mantle = document.getElementById('l-mantle');
+const outerCore = document.getElementById('l-outer');
+const innerCore = document.getElementById('l-inner');
+
+const panels = [
+    document.getElementById('panel-crust'),
+    document.getElementById('panel-mantle'),
+    document.getElementById('panel-outer'),
+    document.getElementById('panel-inner')
+];
+
+let isPresentationActive = false;
+
+document.querySelectorAll('.planet-card').forEach(card => {
+    card.addEventListener('click', () => {
+        const pId = card.getAttribute('data-planet');
+        const data = planetsData[pId];
+        
+        topHalf.style.backgroundImage = `url('${data.tex}')`;
+        bottomHalf.style.backgroundImage = `url('${data.tex}')`;
+        mantle.style.background = `radial-gradient(circle at 50% 50%, ${data.colors[0]}, #220a00)`;
+        outerCore.style.background = `radial-gradient(circle at 50% 50%, ${data.colors[1]}, #4a1500)`;
+        innerCore.style.background = `radial-gradient(circle at 50% 50%, ${data.colors[2]}, #cc7700)`;
+
+        const prefixes = ['c', 'm', 'o', 'i'];
+        data.p.forEach((info, idx) => {
+            document.getElementById(`${prefixes[idx]}-title`).textContent = info.t;
+            document.getElementById(`${prefixes[idx]}-desc`).textContent = info.d;
+            document.getElementById(`${prefixes[idx]}-r1`).textContent = info.r1;
+            document.getElementById(`${prefixes[idx]}-v1`).textContent = info.v1;
+            document.getElementById(`${prefixes[idx]}-r2`).textContent = info.r2;
+            document.getElementById(`${prefixes[idx]}-v2`).textContent = info.v2;
+        });
+
+        navScreen.style.transform = 'scale(1.5) translateY(-50vh)';
+        navScreen.style.opacity = '0';
+        navScreen.style.pointerEvents = 'none';
+        
+        setTimeout(() => {
+            scrollPresentation.style.display = 'block';
+            document.body.style.overflowY = 'auto';
+            window.scrollTo(0, 0);
+            isPresentationActive = true;
+            btnBack.style.display = 'block';
+        }, 800);
+    });
+});
+
+btnBack.addEventListener('click', () => {
+    isPresentationActive = false;
+    document.body.style.overflowY = 'hidden';
+    scrollPresentation.style.display = 'none';
+    btnBack.style.display = 'none';
+    
+    navScreen.style.transform = 'scale(1) translateY(0)';
+    navScreen.style.opacity = '1';
+    navScreen.style.pointerEvents = 'all';
+    
+    stage.style.transform = `scale(1)`;
+    topHalf.style.transform = `translateY(0)`;
+    bottomHalf.style.transform = `translateY(0)`;
+    mantle.style.transform = `scale(0.85)`;
+    outerCore.style.transform = `scale(0.6)`;
+    innerCore.style.transform = `scale(0.3)`;
+    
+    panels.forEach(p => p.style.opacity = '0');
+});
+
+window.addEventListener('scroll', () => {
+    if (!isPresentationActive) return;
+
+    const scrollY = window.scrollY;
+    const maxScroll = document.documentElement.scrollHeight - window.innerHeight;
+    let progress = scrollY / maxScroll; 
+    
+    if (progress > 1) progress = 1;
+    if (progress < 0) progress = 0;
+
+    scrollHint.style.opacity = progress > 0.02 ? '0' : '1';
+
+    const baseScale = 1 + (progress * 0.4);
+    stage.style.transform = `scale(${baseScale})`;
+
+    let splitProgress = Math.max(0, (progress - 0.1) / 0.9);
+    let splitDist = splitProgress * 280; 
+    
+    topHalf.style.transform = `translateY(-${splitDist}px)`;
+    bottomHalf.style.transform = `translateY(${splitDist}px)`;
+
+    let coreScaleProgress = Math.max(0, (progress - 0.25) / 0.75);
+    mantle.style.transform = `scale(${0.85 + coreScaleProgress * 0.15})`;
+    outerCore.style.transform = `scale(${0.6 + coreScaleProgress * 0.25})`;
+    innerCore.style.transform = `scale(${0.3 + coreScaleProgress * 0.35})`;
+
+    updatePanel(panels[0], progress, 0.15, 0.35);
+    updatePanel(panels[1], progress, 0.35, 0.55);
+    updatePanel(panels[2], progress, 0.55, 0.75);
+    updatePanel(panels[3], progress, 0.75, 0.95);
+});
+
+function updatePanel(element, currentProgress, startPhase, endPhase) {
+    if (currentProgress >= startPhase) {
+        let localProgress = (currentProgress - startPhase) / (endPhase - startPhase);
+        if (localProgress > 1) localProgress = 1;
+        
+        element.style.opacity = localProgress;
+        let transformBase = (element.id === 'panel-mantle' || element.id === 'panel-inner') ? -60 : 60;
+        let transformCurrent = transformBase * (1 - localProgress);
+        element.style.transform = `translateX(${transformCurrent}px)`;
+    } else {
+        element.style.opacity = 0;
+        let transformBase = (element.id === 'panel-mantle' || element.id === 'panel-inner') ? -60 : 60;
+        element.style.transform = `translateX(${transformBase}px)`;
+    }
+}
+</script>
+</body>
+</html>
