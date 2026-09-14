@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Digitales Portfolio</title>
+<style>
+body {
+    font-family: 'Courier New', Courier, monospace;
+    background: #121212;
+    color: #e0e0e0;
+    margin: 0;
+    padding: 0;
+}
+nav {
+    background: #1f1f1f;
+    padding: 1rem 0;
+    text-align: center;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+}
+.filter-btn {
+    background: transparent;
+    color: #e0e0e0;
+    border: 1px solid #4caf50;
+    padding: 0.5rem 1rem;
+    margin: 0 0.5rem;
+    cursor: pointer;
+    border-radius: 20px;
+    transition: all 0.3s;
+}
+.filter-btn:hover, .filter-btn.active {
+    background: #4caf50;
+    color: #121212;
+}
+.hero {
+    text-align: center;
+    padding: 4rem 1rem;
+}
+.hero h1 {
+    color: #4caf50;
+    font-size: 3rem;
+    margin-bottom: 0.5rem;
+}
+.portfolio-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 1.5rem;
+    padding: 2rem;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+.project-card {
+    background: #1e1e1e;
+    border-radius: 8px;
+    overflow: hidden;
+    transition: transform 0.3s, opacity 0.4s;
+    border-bottom: 4px solid #4caf50;
+}
+.project-card:hover {
+    transform: translateY(-5px);
+}
+.project-img {
+    height: 150px;
+    background: #2a2a2a;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #777;
+    font-size: 3rem;
+}
+.project-info {
+    padding: 1.5rem;
+}
+.project-info h3 {
+    margin: 0 0 0.5rem 0;
+}
+.tag {
+    display: inline-block;
+    background: #333;
+    padding: 0.2rem 0.5rem;
+    border-radius: 4px;
+    font-size: 0.8rem;
+    margin-right: 0.3rem;
+}
+.hidden {
+    display: none;
+}
+</style>
+</head>
+<body>
+<div class="hero">
+<h1>Mein WebDev Portfolio</h1>
+<p>Eine Sammlung meiner Projekte aus dem Differenzierungskurs.</p>
+</div>
+<nav>
+<button class="filter-btn active" data-filter="all">Alle</button>
+<button class="filter-btn" data-filter="html">HTML/CSS</button>
+<button class="filter-btn" data-filter="js">JavaScript</button>
+<button class="filter-btn" data-filter="design">Design</button>
+</nav>
+<div class="portfolio-grid" id="grid">
+<div class="project-card" data-category="html">
+<div class="project-img">📄</div>
+<div class="project-info">
+<h3>Mein Steckbrief</h3>
+<p>Das erste Projekt. Ein einfacher Steckbrief mit HTML.</p>
+<span class="tag">HTML</span> <span class="tag">CSS</span>
+</div>
+</div>
+<div class="project-card" data-category="js">
+<div class="project-img">🕹️</div>
+<div class="project-info">
+<h3>Quiz-App</h3>
+<p>Ein interaktives Quiz mit Punkteauswertung.</p>
+<span class="tag">JavaScript</span>
+</div>
+</div>
+<div class="project-card" data-category="design">
+<div class="project-img">✨</div>
+<div class="project-info">
+<h3>CSS Art</h3>
+<p>Eine gezeichnete Figur, die nur aus CSS-Code besteht.</p>
+<span class="tag">CSS</span> <span class="tag">Design</span>
+</div>
+</div>
+<div class="project-card" data-category="js">
+<div class="project-img">🧮</div>
+<div class="project-info">
+<h3>Taschenrechner</h3>
+<p>Ein voll funktionsfähiger Taschenrechner im Browser.</p>
+<span class="tag">HTML</span> <span class="tag">JS</span>
+</div>
+</div>
+</div>
+<script>
+const filterBtns = document.querySelectorAll('.filter-btn');
+const cards = document.querySelectorAll('.project-card');
+filterBtns.forEach(btn => {
+btn.addEventListener('click', () => {
+filterBtns.forEach(b => b.classList.remove('active'));
+btn.classList.add('active');
+const filter = btn.dataset.filter;
+cards.forEach(card => {
+if (filter === 'all' || card.dataset.category === filter) {
+card.classList.remove('hidden');
+setTimeout(() => card.style.opacity = '1', 50);
+} else {
+card.style.opacity = '0';
+setTimeout(() => card.classList.add('hidden'), 300);
+}
+});
+});
+});
+</script>
+</body>
+</html>
