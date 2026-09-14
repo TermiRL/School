@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Landingpage: App Launch</title>
+<style>
+* {
+    box-sizing: border-box;
+}
+body, html {
+    margin: 0;
+    padding: 0;
+    font-family: 'Open Sans', sans-serif;
+    overflow-x: hidden;
+}
+header {
+    background: linear-gradient(rgba(0,0,0,0.6), rgba(0,0,0,0.6)), url('https://images.unsplash.com/photo-1551288049-bebda4e38f71?auto=format&fit=crop&w=1920&q=80') center/cover;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    color: white;
+    text-align: center;
+    padding: 0 20px;
+}
+h1 {
+    font-size: 4rem;
+    margin: 0 0 1rem 0;
+    animation: slideDown 1s ease-out;
+}
+p.subtitle {
+    font-size: 1.5rem;
+    max-width: 600px;
+    margin-bottom: 2rem;
+    animation: fadeIn 1.5s ease-in;
+}
+.cta-button {
+    background: #ff5e62;
+    color: white;
+    padding: 15px 30px;
+    text-decoration: none;
+    font-size: 1.2rem;
+    border-radius: 30px;
+    font-weight: bold;
+    transition: transform 0.3s, background 0.3s;
+    border: none;
+    cursor: pointer;
+}
+.cta-button:hover {
+    transform: scale(1.05);
+    background: #ff9966;
+}
+.features {
+    display: flex;
+    justify-content: center;
+    gap: 2rem;
+    padding: 5rem 2rem;
+    background: #f9f9f9;
+    flex-wrap: wrap;
+}
+.feature {
+    background: white;
+    padding: 2rem;
+    border-radius: 10px;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+    text-align: center;
+    flex: 1;
+    min-width: 250px;
+    max-width: 350px;
+    transition: transform 0.3s;
+}
+.feature:hover {
+    transform: translateY(-10px);
+}
+.newsletter {
+    background: #2a2a2a;
+    color: white;
+    padding: 4rem 2rem;
+    text-align: center;
+}
+.newsletter form {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    margin-top: 2rem;
+    flex-wrap: wrap;
+}
+.newsletter input {
+    padding: 12px 20px;
+    font-size: 1rem;
+    border: none;
+    border-radius: 25px;
+    width: 300px;
+    max-width: 100%;
+}
+.newsletter button {
+    background: #00d2ff;
+    color: black;
+    border: none;
+    padding: 12px 25px;
+    font-size: 1rem;
+    border-radius: 25px;
+    cursor: pointer;
+    font-weight: bold;
+}
+#message {
+    margin-top: 1rem;
+    font-weight: bold;
+    color: #00d2ff;
+    display: none;
+}
+@keyframes slideDown {
+    from { opacity: 0; transform: translateY(-50px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+</style>
+</head>
+<body>
+<header>
+<h1>CodeFlow App</h1>
+<p class="subtitle">Lerne Programmieren spielerisch, direkt auf deinem Smartphone. Starte jetzt deine Reise.</p>
+<button class="cta-button" onclick="document.getElementById('newsletter').scrollIntoView({behavior: 'smooth'})">Early Access sichern</button>
+</header>
+<section class="features">
+<div class="feature">
+<h3>Interaktiv</h3>
+<p>Schreibe echten Code und sehe die Ergebnisse sofort in Echtzeit.</p>
+</div>
+<div class="feature">
+<h3>Überall lernen</h3>
+<p>Egal ob in der Bahn oder zu Hause, CodeFlow funktioniert komplett offline.</p>
+</div>
+<div class="feature">
+<h3>Community</h3>
+<p>Tausche dich mit tausenden anderen Lernern aus und teile deine Projekte.</p>
+</div>
+</section>
+<section class="newsletter" id="newsletter">
+<h2>Sei als Erster dabei!</h2>
+<p>Trage dich in unsere Liste ein und erhalte sofortigen Zugriff auf die Beta-Version.</p>
+<form id="leadForm">
+<input type="email" id="emailInput" placeholder="Deine E-Mail-Adresse" required>
+<button type="submit">Anmelden</button>
+</form>
+<div id="message"></div>
+</section>
+<script>
+document.getElementById('leadForm').addEventListener('submit', function(e) {
+e.preventDefault();
+const email = document.getElementById('emailInput').value;
+const msg = document.getElementById('message');
+if(email) {
+msg.textContent = "Danke! " + email + " wurde erfolgreich eingetragen.";
+msg.style.display = "block";
+this.reset();
+}
+});
+</script>
+</body>
+</html>
