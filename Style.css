@@ -1,0 +1,36 @@
+<style>
+.revenue-table {
+    width: 100%;
+    margin-top: 40px;
+    border-collapse: collapse;
+    text-align: left;
+}
+.revenue-table th, .revenue-table td {
+    border-bottom: 1px solid var(--hair);
+    padding: 12px 8px;
+    font-size: .9rem;
+}
+.revenue-table th {
+    color: var(--ink-dim);
+    font-weight: 600;
+}
+</style>
+
+<table class="revenue-table">
+    <tr>
+        <th>Unternehmen</th>
+        <th>Jahresumsatz (ca.)</th>
+    </tr>
+    <tr>
+        <td>Apple</td>
+        <td>383 Mrd. $</td>
+    </tr>
+    <tr>
+        <td>Google (Alphabet)</td>
+        <td>307 Mrd. $</td>
+    </tr>
+    <tr>
+        <td>Microsoft</td>
+        <td>211 Mrd. $</td>
+    </tr>
+</table>
